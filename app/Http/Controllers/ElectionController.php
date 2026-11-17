@@ -1,4 +1,6 @@
+
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -37,12 +39,17 @@ class ElectionController extends Controller
         $lgas = DB::table('lga')->orderBy('lga_name')->get();
 
         $selectedLgaId = $request->input('lga_id');
-
         $results = collect();
 
         if ($selectedLgaId) {
             $results = DB::table('announced_pu_results as results')
-                ->join('polling_unit as pu', DB::raw('CAST(results.polling_unit_uniqueid AS UNSIGNED)'), '=', 'pu.uniqueid')
+                ->join('polling_unit as pu', function ($join) {
+                    $join->on(
+                        DB::raw('CAST(results.polling_unit_uniqueid AS UNSIGNED)'),
+                        '=',
+                        'pu.uniqueid'
+                    );
+                })
                 ->join('party as parties', 'parties.partyid', '=', 'results.party_abbreviation')
                 ->where('pu.lga_id', $selectedLgaId)
                 ->select(
@@ -91,7 +98,6 @@ class ElectionController extends Controller
         $validated = $request->validate($rules);
 
         $pollingUnitId = DB::transaction(function () use ($request, $validated, $partyIds) {
-
             $id = DB::table('polling_unit')->insertGetId([
                 'polling_unit_id' => $validated['polling_unit_id'],
                 'polling_unit_name' => $validated['polling_unit_name'],
