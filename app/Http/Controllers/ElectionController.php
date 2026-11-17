@@ -42,7 +42,7 @@ class ElectionController extends Controller
 
         if ($selectedLgaId) {
             $results = DB::table('announced_pu_results as results')
-                ->join('polling_unit as pu', 'pu.uniqueid', '=', 'results.polling_unit_uniqueid')
+                ->join('polling_unit as pu', DB::raw('CAST(results.polling_unit_uniqueid AS UNSIGNED)'), '=', 'pu.uniqueid')
                 ->join('party as parties', 'parties.partyid', '=', 'results.party_abbreviation')
                 ->where('pu.lga_id', $selectedLgaId)
                 ->select(
