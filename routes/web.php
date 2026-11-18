@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ElectionController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('lga-results');
 });
 
 // Create route must come before the dynamic {id} route
